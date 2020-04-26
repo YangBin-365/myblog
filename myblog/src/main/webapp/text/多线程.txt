@@ -1,0 +1,21 @@
+﻿<h1>多线程</h1><h2>10.1线程概述</h2><p>.</p><h3>10.1.1进程</h3><p>进程之间资源不共享</p><h3>10.1.2&nbsp;线程</h3><p>一个进程至少包含一条线程</p><p>线程是一个进程中任务执行的最小单元</p><p>线程中资源可以共享</p><h2>10.2&nbsp;线程的创建</h2><p>.</p><h3>10.2.1继承Thread类创建多线程</h3><p>class&nbsp;MyThread&nbsp;extends&nbsp;Thread{</p><p>@Override</p><p>public&nbsp;void&nbsp;run(){</p><p>……</p><p>}</p><p>}</p><h3>10.2.2实现&nbsp;Runnable接口创建多线程</h3><p>Runnable&nbsp;ra&nbsp;=&nbsp;()-&gt;&nbsp;{</p><p>……</p><p>};</p><p>Thread&nbsp;tr&nbsp;=&nbsp;new&nbsp;Thread(ra);</p><h3>10.2.3两种实现多线程方式的对比分析，</h3><p>使用Runnable接口创建线程可以规避以Thread单继承的限制</p><h2>10.3线程的生命周期及状态转换</h2><p>.</p><ol><li>新生态&nbsp;eg：&nbsp;Thread&nbsp;tr&nbsp;=&nbsp;new&nbsp;Thread(ra);</li><li>就绪态&nbsp;eg:&nbsp;tr.start();</li><li>运行态&nbsp;eg:&nbsp;该线程抢到了CPU时间片</li><li>阻塞态&nbsp;eg:&nbsp;使用jion()，sleep()方法等</li><li>死亡态&nbsp;eg：&nbsp;该线程中程序被执行完毕或使用stop()方法</li></ol><h2>10.4线程的调度.</h2><p>	在计算机中，线程调度有两种模型：</p><ul><li>	分时调度 <br></li><li><br></li></ul><ul><li>抢占式调度(JVM默认线程调度方式)</li></ul><br><h3>10.4.1线程的优先级</h3><p>优先级以1-10整数表示</p><p>数越大优先级越高</p><p>通过setPriority(int&nbsp;n)方法设置;</p><p>该优先级并非真正的优先级，只是改变该线程抢到CPU时间片的概率</p><h3>10.4.2线程休眠</h3><p>sleep();</p><p>休眠后的线程将会进入阻塞态</p><p>当休眠结束后会进入就绪态</p><h3>10.4.3线程让步</h3><p>yield();</p><p>开启让步的线程将会进入就绪态</p><h3>10.4.4线程插队</h3><p>jion();</p><p>插队的线程会直接进入运行态</p><p>只有当插入的线程全部运行完后(或者说进入死亡态后)，其他线程才会开始运行。</p><h2>10.5&nbsp;多线程同步</h2><h3>10.5.1线程安全问题</h3><p>访问临界资源时出现异常</p><h3>10.5.2同步代码块</h3><p>synchronized(“lock”){</p><p>………………</p><h3>}</h3><h3>10.5.3同步方法</h3><p>静态同步方法的锁为该方法所在类的class对象(类名.class)</p><p>同步方法的锁为当前方法的对象(即this指向的对象)</p><p>pubilc&nbsp;synchronized&nbsp;void&nbsp;funcation()&nbsp;{</p><p>……………………</p><p>}</p><p>**</p><p>重入锁&nbsp;ReentrantLock&nbsp;和&nbsp;synchronized的区别</p><p>**</p><p>实现：ReentrantLock&nbsp;依赖&nbsp;jvm实现</p><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; synchronized&nbsp;依赖&nbsp;JDL实现</p><p>区别：synchronized&nbsp;更便捷</p><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ReentrantLock&nbsp;更灵活</p><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ReenTrantLock的特点：</p><p>1.可以定义是否为公平锁</p><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 而synchronized&nbsp;只能是非公平锁</p><p>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 公平锁就是：先等待的先得到锁</p><h3>2.唤醒</h3><p>synchronized&nbsp;只能随机唤醒一个线程notify()或者全部唤醒notifyAll()</p><p>ReenTrantLock&nbsp;可以实现分组唤醒需要唤醒的线程们</p><h3>3.课终端等待锁的线程</h3><p>通过lock.lockInterruptibly()来实现</p><p>LinkedList&nbsp;ArrayList&nbsp;HashMap&nbsp;HashSet线程皆不安全</p><p>Vector(各方法均有synchronized关键字)…&nbsp;线程安全</p><h3>10.5.4死锁问题.</h3><pre style="max-width:100%;overflow-x:auto;"><code class="java hljs" codemark="1">Runnable ra1 = ()-&gt; {
+<span class="hljs-keyword">synchronized</span> (“A”){
+System.out.println(“ra1持有了A锁”);
+<span class="hljs-keyword">synchronized</span> (“B”){
+System.out.println(“ra1持有来了B锁”);
+}
+}
+    Runnable ra2 = ()-&gt; {
+        <span class="hljs-keyword">synchronized</span> (<span class="hljs-string">"B"</span>){
+            System.out.println(<span class="hljs-string">"ra2持有了B锁"</span>);
+            <span class="hljs-keyword">synchronized</span> (<span class="hljs-string">"A"</span>){
+                System.out.println(<span class="hljs-string">"ra2持有来了A锁"</span>);
+            }
+        }
+    };
+
+    Thread tr1 = <span class="hljs-keyword">new</span> Thread(ra1,<span class="hljs-string">"one"</span>);
+    Thread tr2 = <span class="hljs-keyword">new</span> Thread(ra2,<span class="hljs-string">"two"</span>);
+    tr1.start();
+    tr2.start();
+</code></pre><p>可通过"A".wait()来释放A锁，让出CPU资源，使得当前线程进入等待队列</p><p>之后再用"A".notifyAll()，“A”.notify()方法唤醒</p><p>活锁(无限等待)解决方法：先来先服务</p><p>死锁(等待死循环)</p><ol><li>预防</li></ol><p>&nbsp;&nbsp;&nbsp; 1、超时法</p><p>&nbsp;&nbsp;&nbsp; 2、等待图法*</p><p>2.解决</p><p>&nbsp;&nbsp;&nbsp; 1.数据库并发异常：</p><p>&nbsp;&nbsp;&nbsp; 2.丢失修改</p><p>&nbsp;&nbsp;&nbsp; 3.不可重复读</p><p>读脏数据</p><h3>三级封锁协议</h3><p>在读操作前加读锁(X锁，排它锁)，在写操作前加写锁(S锁，共享锁)。均在事务结束后释放。</p><br><p><br></p>

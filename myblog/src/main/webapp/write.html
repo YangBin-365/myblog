@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>my blog</title>
+    <link rel="icon" href="images/title.png">
+    <link rel="stylesheet" type="text/css" href="css/wangEditor.min.css">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+    <link href="css/m.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script>
+        $(function () {
+            $(".wangEditor-txt").attr("style", "height:400px;");
+            $(".wangEditor-container").attr("style", "height:100%;width:100%;");
+
+            $("#button").click(function () {
+                uploadFile();
+
+                $.post("saveServlet",{title:$("#title").val(),label:$("#label").val(),name:$("#upload-image").val(),main:$(".wangEditor-txt").html()},function () {
+                alert("上传成功");
+                });
+            });
+
+        });
+
+        function uploadFile() {
+            var fileObj1 = document.getElementById("upload-image").files[0]; // 获取文件对象
+
+            if (fileObj1) {
+                // FormData 对象
+                var form = new FormData();
+                form.append("file", fileObj1);// 文件对象
+                // XMLHttpRequest 对象
+                var xhr = new XMLHttpRequest();
+                xhr.open("post", "entityServlet", true);
+                xhr.send(form);
+            } else {
+                alert("未选择文件");
+            }
+        }
+
+
+    </script>
+    <style>
+        form {
+            width: 70%;
+            margin: 0 15%;
+        }
+        input{
+            text-align: center;
+        }
+        button{
+            margin: 15px;
+        }
+    </style>
+    <![endif]-->
+</head>
+
+<body>
+<header>
+    <div class="tophead">
+        <div class="logo"><a href="/">杨斌的个人博客</a></div>
+        <div id="mnav">
+            <h2><span class="navicon"></span></h2>
+            <ul>
+                <li><a href="index.html">网站首页</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="list.html">学无止境</a></li>
+                <li><a href="gbook.html">留言</a></li>
+            </ul>
+        </div>
+        <nav class="topnav" id="topnav">
+            <ul>
+                <li><a href="index.html">网站首页</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="list.html">学无止境</a></li>
+                <li><a href="gbook.html">留言</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<form>
+    <center>
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon" id="sizing-addon1">&nbsp&nbspTitle&nbsp&nbsp</span>
+            <input type="text" id = "title" class="form-control" placeholder="标题" aria-describedby="sizing-addon1">
+        </div>
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon" >&nbspLabel&nbsp</span>
+            <input type="text" id= "label" class="form-control" placeholder="标签" aria-describedby="sizing-addon1">
+        </div>
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon" >Picture</span>
+            <input type="file" id = "upload-image" accept="image/*" class="form-control" placeholder="封面图片" aria-describedby="sizing-addon1">
+        </div>
+<!--        <span>&#12288;&#12288;&#12288;&#12288;&#12288;封面：</span><input type="file" name="image"></center>-->
+    <br>
+    <textarea id="content" placeholder="这里是内容"></textarea>
+<center><div class="btn-group">
+    <button class="btn btn-default btn-lg " id = "button"  aria-haspopup="true" aria-expanded="false">
+        提&nbsp&nbsp交
+    </button>
+
+</div></center>
+</form>
+<!--<script src="js/jquery-1.8.3.min.js"></script>-->
+<script type="text/javascript" src="js/wangEditor.min.js"></script>
+
+<script>
+
+    var editor = new wangEditor('content');
+
+    editor.create();
+
+</script>
+
+</body>
+</html>
